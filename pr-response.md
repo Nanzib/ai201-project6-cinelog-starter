@@ -32,7 +32,41 @@
 * **How I verified no conflict remains**: I ran the test orchestration engine with `python -m pytest` and verified all tests pass across both components with no integrity or import failures.
 
 ## PR Description
+### 📝 Feature Overview
+This pull request introduces comprehensive, production-ready backend support for the user Watchlist feature within CineLog. It provides clean, scalable endpoints for adding films to a personal queue, removing existing entries, customizing list visibility settings, and fetching user watchlists sorted chronologically (newest additions first).
 
+---
+
+### 🎨 Design Decisions Summary
+1. **Default Visibility (`public=True`)**: Set as public by default to encourage social discovery and lower the friction for community interaction, while providing an optional boolean parameter to accommodate private curation queues.
+2. **Sort Order (`date_added.desc()`)**: Watchlists are arranged chronologically by date added descending rather than alphabetically. This optimizes for standard queue behavior, putting a user's most recent, top-of-mind film additions right at the front of their feed.
+
+---
+
+### 🧪 Step-by-Step Manual Testing Instructions
+To manually verify that the watchlist feature endpoints function correctly, execute the following actions using a local terminal tool:
+
+1. **Spin up the application server**:
+```bash
+python app.py
+```
+
+2. **Add a film with explicit private visibility (POST)**:
+```bash
+curl -X POST [http://127.0.0.1:5000/watchlist/user-123/add](http://127.0.0.1:5000/watchlist/user-123/add) \
+     -H "Content-Type: application/json" \
+     -d '{"film_id": "00000000-0000-0000-0000-000000000000", "public": false}'
+```
+
+3. **Retrieve the chronological watchlist layout (GET)**:
+```bash
+curl -X GET [http://127.0.0.1:5000/watchlist/user-123](http://127.0.0.1:5000/watchlist/user-123)
+```
+
+4. **Remove a film from the watchlist (DELETE)**:
+```bash
+curl -X DELETE [http://127.0.0.1:5000/watchlist/user-123/remove/00000000-0000-0000-0000-000000000000](http://127.0.0.1:5000/watchlist/user-123/remove/00000000-0000-0000-0000-000000000000)
+```
 
 ---
 
