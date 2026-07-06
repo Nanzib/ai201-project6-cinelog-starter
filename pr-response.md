@@ -1,5 +1,7 @@
 # PR Response Doc — CineLog Watchlist Feature
 
+![Git Log History](image.png)
+
 ## AI Usage
 * **Instance 1 — Codebase Orientation and Pattern Analysis**: I used the AI collaborator to analyze the architecture of `services/collection_service.py` to identify how the development team handles business operations and error bubbling. The AI highlighted the `verb_to_noun` naming pattern (`add_to_collection`) and the specific layout used for deduplication lookups. I applied this exact convention when designing the corresponding watchlist components.
 * **Instance 2 — Overriding Flawed Structural Implementations**: When reconstructing `models.py` following the UUID rebase, the test engine threw an unhandled `AttributeError: 'WatchlistEntry' object has no attribute 'film'`. The AI initial framework had omitted structural parameters, assuming raw foreign key specifications would auto-generate model relationship object bindings. I overrode the incomplete layout by manually injecting an explicit `db.relationship("Film", lazy=True)` assignment directly within the `WatchlistEntry` class declaration to resolve the application mapping layer.
