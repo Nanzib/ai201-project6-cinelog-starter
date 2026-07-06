@@ -1,6 +1,8 @@
 # PR Response Doc — CineLog Watchlist Feature
 
 ## AI Usage
+* **Instance 1 — Codebase Orientation and Pattern Analysis**: I used the AI collaborator to analyze the architecture of `services/collection_service.py` to identify how the development team handles business operations and error bubbling. The AI highlighted the `verb_to_noun` naming pattern (`add_to_collection`) and the specific layout used for deduplication lookups. I applied this exact convention when designing the corresponding watchlist components.
+* **Instance 2 — Overriding Flawed Structural Implementations**: When reconstructing `models.py` following the UUID rebase, the test engine threw an unhandled `AttributeError: 'WatchlistEntry' object has no attribute 'film'`. The AI initial framework had omitted structural parameters, assuming raw foreign key specifications would auto-generate model relationship object bindings. I overrode the incomplete layout by manually injecting an explicit `db.relationship("Film", lazy=True)` assignment directly within the `WatchlistEntry` class declaration to resolve the application mapping layer.
 
 ## Comment 1 — Rename
 * **What I did**: I renamed the core service function from `save_to_watchlist()` to `add_to_watchlist()` inside `services/watchlist_service.py` to align with the platform's standard `verb_to_noun` naming convention. 
@@ -30,3 +32,18 @@
 * **How I verified no conflict remains**: I ran the test orchestration engine with `python -m pytest` and verified all tests pass across both components with no integrity or import failures.
 
 ## PR Description
+
+
+---
+
+## 🚀 Stretch Features Ledger
+
+### Stretch Feature 1 — Add remove_from_watchlist()
+* **Implementation Details**: I designed and exposed the `remove_from_watchlist(user_id, film_id)` service routine inside `services/watchlist_service.py`. It leverages a `.filter_by()` lookup query against the active database row maps. If the entry is absent, it throws a localized `NotInWatchlistError` exception (modeled cleanly after the core collection engine's patterns). If discovered, it safely deletes the row and commits the session changes.
+* **Testing Methods**: Verified via automated execution inside `tests/test_watchlist.py` via `test_remove_from_watchlist_removes_entry` and `test_remove_from_watchlist_not_on_list_raises`.
+
+### Stretch Feature 2 — Secondary Edge-Case Testing
+* **Edge Case Selection & Rationale**: I implemented `test_add_to_watchlist_explicit_private_visibility` to ensure data state integrity when handling manual visibility modifications. It is critical to confirm that explicitly pushing non-default values (`public=False`) accurately modifies row field configuration variables and returns appropriate query responses, ensuring private entries remain private.
+
+### Stretch Feature 3 — Visibility Toggle Endpoint
+* **Functionality & Call Protocol**: The `POST /watchlist/<user_id>/add` routing action was refactored to parse an optional `"public"` boolean property key from client JSON request dictionaries (`data.get("public", True)`). Callers can supply `{"film_id": "<uuid>", "public": false}` within their payload wrappers to override the platform's social discovery default.

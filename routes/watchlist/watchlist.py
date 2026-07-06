@@ -1,11 +1,16 @@
 """
-routes/watchlist.py — CineLog (feature/watchlist branch)
+routes/watchlist.py — CineLog
 
 Endpoints for the watchlist feature.
 """
 
 from flask import Blueprint, jsonify, request
-from services.watchlist_service import add_to_watchlist, get_watchlist
+from services.watchlist_service import (
+    add_to_watchlist, 
+    get_watchlist, 
+    remove_from_watchlist, 
+    NotInWatchlistError
+)
 from services.collection_service import FilmNotFoundError
 
 watchlist_bp = Blueprint("watchlist", __name__)
@@ -22,12 +27,28 @@ def view_watchlist(user_id):
 def add_film(user_id):
     """
     POST /watchlist/<user_id>/add
-
-    Body: { "film_id": <int> }
+    Body: { "film_id": <str>, "public": <bool> (optional) }
     """
     data = request.get_json()
     if not data or "film_id" not in data:
         return jsonify({"error": "film_id is required"}), 400
 
-    entry = add_to_watchlist(user_id=user_id, film_id=data["film_id"])
+    # Stretch Feature 3: Extract explicit visibility toggle parameter
+    public_visibility = data.get("public", True)
+
+    entry = add_to_watchlist(
+        user_id=user_id, 
+        film_id=data["film_id"], 
+        public=public_visibility
+    )
     return jsonify(entry.to_dict()), 201
+
+
+@watchlist_bp.route("/<user_id>/remove/<film_id>", methods=["DELETE"])
+def remove_film(user_id, film_id):
+    """DELETE /watchlist/<user_id>/remove/<film_id> — Remove a film from the watchlist."""
+    try:
+        remove_from_watchlist(user_id=user_id, film_id=film_id)
+        return jsonify({"message": "Film successfully removed from watchlist"}), 200
+    except NotInWatchlistError as e:
+        return jsonify({"error": str(e)}), 404
