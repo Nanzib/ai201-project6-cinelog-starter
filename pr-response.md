@@ -11,8 +11,8 @@
 * **How I verified**: I referenced the architectural pattern built into `services/collection_service.py` (specifically how `add_to_collection()` leverages `.query.filter_by().first()`) to ensure identical exception handling patterns. I then ran `python -m pytest` to verify the application's core data persistence logic remains sound.
 
 ## Comment 3 — Missing test
-* **What I did:**
-* **How I verified:**
+* **What I did**: I created a new test file `tests/test_watchlist.py` and implemented the `test_add_to_watchlist_nonexistent_film_raises()` test function.
+* **How I verified**: I modeled this test suite directly after the structure found in `tests/test_collection.py`, replicating the isolated in-memory database app fixture and user seeding mechanics. I used an integer value (`999999`) to represent a non-existent film asset to match the branch's pre-refactor schema, wrapped the call inside a `pytest.raises(FilmNotFoundError)` assertion context block, and confirmed it passes successfully by running `python -m pytest tests/test_watchlist.py -v`.
 
 ## Comment 4 — Default visibility
 * **My position:**
