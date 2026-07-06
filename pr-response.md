@@ -15,14 +15,14 @@
 * **How I verified**: I modeled this test suite directly after the structure found in `tests/test_collection.py`, replicating the isolated in-memory database app fixture and user seeding mechanics. I used an integer value (`999999`) to represent a non-existent film asset to match the branch's pre-refactor schema, wrapped the call inside a `pytest.raises(FilmNotFoundError)` assertion context block, and confirmed it passes successfully by running `python -m pytest tests/test_watchlist.py -v`.
 
 ## Comment 4 — Default visibility
-* **My position:**
-* **Reasoning:**
-* **Tradeoff acknowledged:**
+* **My position**: I strongly support maintaining the `public=True` default parameter configuration for newly generated watchlists.
+* **Reasoning**: CineLog is structurally positioned as a community film-tracking app where social proof and collective cinema discovery serve as primary utility drivers. By optimizing for public visibility by default, we reduce user onboarding friction for social loops—allowing friends to instantly view, share, and cross-reference peer watchlists without requiring manual, multi-step privacy configuration. This default behavior directly accelerates engagement and platform curation velocity.
+* **Tradeoff acknowledged**: The clear tradeoff here is user privacy baseline expectations. Privacy-conscious users might assume their upcoming, uncurated lists are private until explicitly shared. To mitigate this risk without crippling platform discoverability, the system provides an optional `public` visibility argument on creation and route parameters, allowing explicit overrides while keeping the baseline social engine open.
 
 ## Comment 5 — Sort order
-* **My position:**
-* **Reasoning:**
-* **Engagement with reviewer's point:**
+* **My position**: I agree with the maintainer’s preference to transition the default watchlist collection sort order from alphabetical (`Film.title.asc()`) to chronological descending based on creation timestamps (`WatchlistEntry.date_added.desc()`).
+* **Reasoning**: A watchlist functions as a highly transient queue of immediate intent, fundamentally different from a static library collection. Sorting chronologically optimizes for a user's active, top-of-mind desires—instantly answering the question, "What did I just add to my list to watch tonight?" Alphabetical sorting scatters recent additions arbitrarily based on title lettering, creating a highly disjointed user experience as the ledger grows larger over time.
+* **Engagement with reviewer's point**: The maintainer's observation that "most users want to see what they added recently" is entirely accurate regarding transient queue behavior. Furthermore, adopting a chronological sorting mechanism mirrors the structural design pattern established inside `services/collection_service.py` for `get_collection()`. This architectural consistency provides a predictable user experience across all profile feeds in the CineLog platform.
 
 ## Comment 6 — Rebase
 * **What conflicted:**
