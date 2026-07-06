@@ -25,8 +25,8 @@
 * **Engagement with reviewer's point**: The maintainer's observation that "most users want to see what they added recently" is entirely accurate regarding transient queue behavior. Furthermore, adopting a chronological sorting mechanism mirrors the structural design pattern established inside `services/collection_service.py` for `get_collection()`. This architectural consistency provides a predictable user experience across all profile feeds in the CineLog platform.
 
 ## Comment 6 — Rebase
-* **What conflicted:**
-* **How I resolved it:**
-* **How I verified no conflict remains:**
+* **What conflicted**: The upstream `main` branch introduced a database refactor changing `Film.id` columns from sequential integers to string-based UUID identifiers. This created a structural type mismatch with our `WatchlistEntry.film_id` column (initially written as an integer) and dropped our newly declared model out of `models.py` since it did not exist upstream yet.
+* **How I resolved it**: I manually appended the `WatchlistEntry` entity schema back to the bottom of `models.py` using `db.String(36)` columns to link foreign keys correctly. I updated the non-existent mock tracking parameters in `tests/test_watchlist.py` to use a string-based mock UUID (`"00000000-0000-0000-0000-000000000000"`). I also incorporated our Comment 5 design selection by altering the query tracking array inside `get_watchlist()` to sort by `WatchlistEntry.date_added.desc()`.
+* **How I verified no conflict remains**: I ran the test orchestration engine with `python -m pytest` and verified all tests pass across both components with no integrity or import failures.
 
 ## PR Description
