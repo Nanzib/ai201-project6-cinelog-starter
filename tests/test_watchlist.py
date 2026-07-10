@@ -97,3 +97,5 @@ def test_add_to_watchlist_explicit_private_visibility(app, sample_user, sample_f
         
         watchlist = get_watchlist(sample_user)
         assert watchlist[0]["public"] is False
+
+# Additional test tracking for explicit privacy states
