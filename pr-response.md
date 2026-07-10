@@ -1,6 +1,6 @@
 # PR Response Doc — CineLog Watchlist Feature
 
-![Git Log History](image.png)
+<img width="731" height="236" alt="image" src="https://github.com/user-attachments/assets/589011a7-d651-4c75-b37d-ae50e07bbf75" />
 
 ## AI Usage
 * **Instance 1 — Codebase Orientation and Pattern Analysis**: I used the AI collaborator to analyze the architecture of `services/collection_service.py` to identify how the development team handles business operations and error bubbling. The AI highlighted the `verb_to_noun` naming pattern (`add_to_collection`) and the specific layout used for deduplication lookups. I applied this exact convention when designing the corresponding watchlist components.
